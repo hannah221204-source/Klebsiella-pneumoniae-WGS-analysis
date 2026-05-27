@@ -1,0 +1,11 @@
+## Download FastQC and MultiQC
+conda install -c bioconda fastqc
+conda install -c bioconda multiqc
+## Make a directory
+mkdir fastqc-multiqc
+# The raw WGS read files must be inside this directory
+## Quality check of raw WGS reads
+fastqc S250131130_L01_302_1.fq.gz  S250131130_L01_302_2.fq.gz
+# The output of the fastqc command comprised an HTML report, which was used to assess each read file manually, and a zip report, which was used to process MultiQC
+## Use MultiQC to aggregate and visualize FastQC reports
+multiqc . -o multiqc_output -n fastqc_summary.html
