@@ -1,0 +1,4 @@
+## Download fastp
+
+## Run fastp
+fastp -i S250131130_L01_302_1.fq.gz -I S250131130_L01_302_2.fq.gz -o 302_1_fastp.fq.gz -O 302_2_fastp.fq.gz -h 302_fastp.html -j 302_fastp.json
