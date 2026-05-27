@@ -1,0 +1,41 @@
+## Create and activate Kraken2 environment
+conda create -n kraken_env python=3.9 -y
+conda activate kraken_env
+## Make a directory and download Kraken2 database
+mkdir kraken2
+cd kraken2
+mkdir kraken2_db
+# Set the database path
+KRAKEN_DB=/mnt/18T/nhienhuong/kraken2/kraken2_db
+# Download database k2_standard_08_GB_20260226.tar.gz
+# Extract database
+tar -xzf k2_standard_08_GB_20260226.tar.gz
+# Get “extract_kraken_reads.py” for the extraction of KP reads.
+git clone https://github.com/jenniferlu717/KrakenTools.git 
+# Download Biopython for running “extract_kraken_reads.py”
+conda install -c conda-forge biopython
+## Create a kraken2 slurm job
+nano run_kraken2.sh
+  #!/bin/bash
+  #SBATCH --job-name=kraken2_filter
+  #SBATCH --cpus-per-task=16
+  #SBATCH --mem=16G
+  #SBATCH --time=4:00:00
+  #SBATCH --output=kraken2.log
+  #SBATCH --error=kraken2.err
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate kraken_env
+  # Input reads
+  R1=nohost_304_1.fastq.gz
+  R2=nohost_304_2.fastq.gz
+  # Kraken2 database
+  DB=/mnt/18T/nhienhuong/kraken2/kraken2_db
+  # Classify reads
+  kraken2 \
+    --db $DB \
+    --paired \
+    --gzip-compressed \
+    --threads $SLURM_CPUS_PER_TASK \
+    --report kraken2_304.report \
+    --output kraken2_304.output \
+    $R1  $R2
