@@ -1,0 +1,56 @@
+## Using QUAST
+# Create directory and environment
+mkdir quast
+conda create -n quast_env -c bioconda quast 
+conda activate quast_env
+mv contigs_302.fasta /mnt/18T/nhienhuong/quast
+# Run QUAST using slurm job
+  nano run_quast.sh
+  #!/bin/bash
+  #SBATCH --job-name=quast
+  #SBATCH --output=quast_302.out
+  #SBATCH --error=quast_302.err
+  #SBATCH --time=24:00:00
+  #SBATCH --cpus-per-task=16
+  #SBATCH --mem=64G
+  # Load modules (adjust to your cluster)
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate quast_env
+  # Run QUAST
+  quast.py contigs_302.fasta \
+    -o quast_results \
+    -t $SLURM_CPUS_PER_TASK
+cd quast_302_results
+# Distinguish from the report of sample 304
+move report.html report_302.html
+# Move the report file from hpc to terminal to open it
+scp -P 6820 -i ~/.ssh/SSH-key-hpc01 huongnguyen@trongchinh.zapto.org:/mnt/18T/nhienhuong/quast/quast_302_results/report_302.html ~/Downloads/Thesis/Quast/report_302.html
+## Using BUSCO
+# Create busco environment
+conda create -n busco_env -c conda-forge -c bioconda busco
+conda activate busco_env
+# Run BUSCO with slurm job
+nano run_busco.sh
+  #!/bin/bash
+  #SBATCH --job-name=busco_contigs
+  #SBATCH --output=busco.out
+  #SBATCH --error=busco.err
+  #SBATCH --time=24:00:00
+  #SBATCH --cpus-per-task=8
+  #SBATCH --mem=32G
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate busco_env
+  INPUT="contigs_302.fasta"
+  OUT="busco_302.result"
+  # Lineage dataset 
+  LINEAGE="enterobacterales_odb10"
+  # Run BUSCO
+  busco \
+    -i $INPUT \
+    -o $OUT \
+    -l $LINEAGE \
+    -m genome \
+    -c $SLURM_CPUS_PER_TASK
+# Check the result
+cd busco_302.result
+less short_summary.specific.enterobacterales_odb10.busco_302.result.tx
