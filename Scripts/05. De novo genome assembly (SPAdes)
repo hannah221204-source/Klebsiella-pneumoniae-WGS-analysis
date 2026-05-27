@@ -1,0 +1,25 @@
+## Initialize Mamba package manager.
+source /opt/miniforge/bin/activate 
+export MAMBA_ROOT_PREFIX=$HOME/mamba
+export CONDA_PKGS_DIRS=$HOME/.conda/pkgs
+eval "$(mamba shell hook --shell bash)"
+# Create and activate SPAdes environment
+conda create -n spades_env -c bioconda spades
+conda activate spades_env
+## Run SPAdes with slurm job
+nano run_spades.sh
+  #!/bin/bash
+  #SBATCH --job-name=spades_302
+  #SBATCH --cpus-per-task=8
+  #SBATCH --mem=16GB
+  #SBATCH --time=04:00:00
+  #SBATCH --output=spades_302.out
+  #SBATCH --error=spades_302.err
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate spades_env 
+  spades.py -1 nohost_302_1.fastq.gz -2 nohost_302_2.fastq.gz -o spades_302 -t 8 -m 16 
+sbatch run_spades.sh
+# Move to resulted directory
+cd spades_302
+# Rename contigs.fasta to distinguish it from sample 304’s  
+mv contigs.fasta contigs_302.fasta
