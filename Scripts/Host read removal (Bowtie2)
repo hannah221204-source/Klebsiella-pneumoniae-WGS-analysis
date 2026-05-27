@@ -1,0 +1,14 @@
+## Download Bowtie2
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.5.4/bowtie2-2.5.4-linux-x86_64.zip/download -O bowtie2-2.5.4-linux-x86_64.zip
+## Run Bowtie2 using slurm job
+# Index human reference
+nano run_homosapiens_index.sh
+  #!/bin/bash
+  #SBATCH --job-name=bt2_index
+  #SBATCH --cpus-per-task=8
+  #SBATCH --mem=32G
+  #SBATCH --time=08:00:00
+  #SBATCH --output=bt2_index_%j.out
+  #SBATCH --error=bt2_index_%j.err
+  export PATH=/mnt/18T/nhienhuong/bowtie2/bowtie2-2.5.2-linux-x86_64:$PATH
+  bowtie2-build homosapiens.fa.gz host_index
