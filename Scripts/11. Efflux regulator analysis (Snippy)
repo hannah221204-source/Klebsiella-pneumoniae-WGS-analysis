@@ -1,0 +1,25 @@
+## Create and activate snippy environment
+conda create -n snippy_env -c conda-forge -c bioconda snippy
+conda activate snippy_env
+## Search for regulator genes in the input files
+grep -Ei "acrR|ramR|marR|mexR|nalC|adeR|adeS" prokka_302.gff
+## Run snippy with slurm job
+nano run_snippy.sh
+  #!/bin/bash
+  #SBATCH --job-name=snippy
+  #SBATCH --output=snippy.out
+  #SBATCH --error=snippy.err
+  #SBATCH --time=04:00:00
+  #SBATCH --cpus-per-task=8
+  #SBATCH --mem=32G
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate snippy_env
+  snippy \
+    --outdir snippy_302_results \
+    --ref prokka_ref.gbk \
+    --ctgs prokka_302.fna	
+sbatch run_snippy.sh
+## Change the output file's name if having many isolates
+mv snps.tab snps_302.tab
+## Move output files from hpc to terminal for examination
+scp -P 6820 -i ~/.ssh/SSH-key-hpc01 huongnguyen@trongchinh.zapto.org:/mnt/18T/nhienhuong/snippy/snippy_302_results/snps_302.tab ~/Downloads/Thesis/Snippy/snps_302.tab  
