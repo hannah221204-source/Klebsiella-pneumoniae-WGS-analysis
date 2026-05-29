@@ -1,0 +1,42 @@
+## Using AMRFinder
+# Create and activate amrfinder environment
+conda create -n amrfinder_env -c conda-forge -c bioconda ncbi-amrfinderplus
+conda activate amrfinder_env
+# Download the latest AMRFinder database or updates it if already present
+amrfinder -u
+# Run AMRFinder using slurm job
+nano run_amrfinder.sh
+  #!/bin/bash
+  #SBATCH --job-name=amrfinder
+  #SBATCH --output=amrfinder.out
+  #SBATCH --error=amrfinder.err
+  #SBATCH --time=04:00:00
+  #SBATCH --cpus-per-task=8
+  #SBATCH --mem=16G
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate amrfinder_env
+  amrfinder -n prokka_302.faa -o amrfinder_302_results.tsv --threads 8
+# Seperate content in the output file into columns
+tr '\t' ',' < amrfinder_302_results.tsv > amrfinder_302_results.csv
+# Exit the hpc01 to copy the file from hpc to my terminal.
+scp -P 6820 -i ~/.ssh/SSH-key-hpc01 huongnguyen@trongchinh.zapto.org:/mnt/18T/nhienhuong/amrfinder/amrfinder_302_results.csv ~/Downloads/Thesis/AMRfinder/amrfinder_302_results.csv
+# Open web browser -> Google sheet -> Open file amrfinder_302_results.tsv
+## Using Kleborate
+# Run Kleborate using slurm job
+nano run_kleborate.sh
+  #!/bin/bash
+  #SBATCH --job-name=kleborate
+  #SBATCH --cpus-per-task=8
+  #SBATCH --mem=16GB
+  #SBATCH --time=02:00:00
+  #SBATCH --output=kleborate.out
+  #SBATCH --error=kleborate.err
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate kleborate_env
+  kleborate -a prokka_302.fna -o kleborate_302_results --preset kpsc -- threads 8
+sbatch run_kleborate.sh
+# Seperate content in the output file into columns
+tr '\t' ',' < klebsiella_pneumo_complex_hAMRonization_output.txt > kleborate_result_302.csv 
+# Exit the hpc01 to copy the file from hpc to my terminal.
+scp -P 6820 -i ~/.ssh/SSH-key-hpc01 huongnguyen@trongchinh.zapto.org:/mnt/18T/nhienhuong/kleborate/AMR_gene_finding/kleborate_302_results/kleborate_result_302.csv ~/Downloads/Thesis/Kleborate/kleborate_result_302.csv  
+# Open web browser -> Google sheet -> Open file amrfinder_302_results.tsv
