@@ -1,0 +1,25 @@
+## Install fastANI and create fastANI environment
+conda install -c bioconda fastani
+conda create -n fastani -c bioconda fastani => Create fastani_env.
+## Run fastANI
+# Generate the file lists FastANI requires
+ls /mnt/18T/nhienhuong/fastANI/contigs_302.fasta > query_list_302.txt
+ls /mnt/18T/nhienhuong/fastANI/GCF_000240185.1_ASM24018v2_genomic.fna > ref_list.txt 
+# Run fastANI using slurm job
+nano run_fastani.sh
+  #!/bin/bash
+  #SBATCH --job-name=fastani
+  #SBATCH --output=fastani.out
+  #SBATCH --error=fastani.err
+  #SBATCH --time=02:00:00
+  #SBATCH --cpus-per-task=16
+  #SBATCH --mem=32G
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate fastani
+  # Run FastANI
+  fastANI \
+    --ql query_list_302.txt \
+    --rl ref_list.txt \
+    --output fastani_result_302.txt \
+    --threads $SLURM_CPUS_PER_TASK
+sbatch run_fastani.sh
