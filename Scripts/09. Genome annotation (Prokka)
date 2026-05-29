@@ -1,0 +1,39 @@
+## Create and activate prokka environment
+conda create -n prokka_env prokka -c conda-forge -c bioconda
+conda activate prokka_env
+## Annotating samples
+Nano run_prokka.sh
+  #!/bin/bash
+  #SBATCH --job-name=prokka_annotation
+  #SBATCH --cpus-per-task=16
+  #SBATCH --mem=32G
+  #SBATCH --time=12:00:00
+  #SBATCH --output=prokka.log
+  #SBATCH --error=prokka.err
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate prokka_env
+  prokka contigs_302.fasta \
+    --genus Klebsiella \
+    --species pneumoniae \
+    --strain ST16 \
+    --prefix prokka_302 \
+    --outdir prokka_302_results
+## Annotating reference genome
+nano run_prokka_ref.sh
+  #!/bin/bash
+  #SBATCH --job-name=prokka_annotation_ref
+  #SBATCH --cpus-per-task=16
+  #SBATCH --mem=32G
+  #SBATCH --time=4:00:00
+  #SBATCH --output=prokka_ref.log
+  #SBATCH --error=prokka_ref.err
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate prokka_env
+  prokka GCF_000240185.1_ASM24018v2_genomic.fna \
+    --genus Klebsiella \
+    --species pneumoniae \
+    --strain HS11286 \
+    --prefix prokka_ref \
+    --outdir prokka_ref_results
+## Copy ".gbk" file to Snippy for convenient interpretation of variants of efflux pump regulators.
+cp prokka_ref.gbk /mnt/18T/nhienhuong/snippy 
