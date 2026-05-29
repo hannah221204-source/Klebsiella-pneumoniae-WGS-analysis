@@ -12,6 +12,6 @@ nano run_kleborate_MLST.sh
   kleborate \
   -a contigs_302.fasta \
   -o MLST_302_results \
-  --preset kpsc \ 		(-a: assemblies, -o: output, kpsc: Klebsiella pneumoniae species complex) 
+  --preset kpsc \ 		
   --threads $SLURM_CPUS_PER_TASK
 sbatch run_kleborate_MLST.sh
