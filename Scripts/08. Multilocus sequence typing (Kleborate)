@@ -1,0 +1,17 @@
+# Run kleborate using slurm job
+nano run_kleborate_MLST.sh
+  #!/bin/bash
+  #SBATCH --job-name=kleborate_MLST
+  #SBATCH --cpus-per-task=4
+  #SBATCH --mem=16G
+  #SBATCH --time=04:00:00
+  #SBATCH --output=MLST.log
+  #SBATCH --error=MLST.err
+  source ~/miniconda3/etc/profile.d/conda.sh
+  conda activate kleborate_env
+  kleborate \
+  -a contigs_302.fasta \
+  -o MLST_302_results \
+  --preset kpsc \ 		(-a: assemblies, -o: output, kpsc: Klebsiella pneumoniae species complex) 
+  --threads $SLURM_CPUS_PER_TASK
+sbatch run_kleborate_MLST.sh
